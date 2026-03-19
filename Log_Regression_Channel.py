@@ -199,7 +199,7 @@ else:
                 # 這裡再次強制指定顏色，並增加邊框讓它更明顯
                 font=dict(color=font_color, size=14),
                 bordercolor=font_color, # 增加一個淡淡的邊框有助於視覺識別
-                borderwidth=0.5,
+                borderwidth=0,
                 itemsizing='constant' # 讓圖示大小固定，不會變細
             )
         )

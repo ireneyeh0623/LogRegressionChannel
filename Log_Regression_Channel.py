@@ -158,38 +158,49 @@ else:
         fig.add_trace(go.Scatter(x=df['Date_Str'], y=df['Log_M1SD'], name='-1SD 悲觀', line=dict(color='lightgreen', width=1, dash='dot')))
         fig.add_trace(go.Scatter(x=df['Date_Str'], y=df['Log_M2SD'], name='-2SD 極端悲觀', line=dict(color='green', width=1, dash='dot')))
 
-        # D. 圖表佈局設定 (加深字體、消除格線)
+        # D. 圖表佈局設定 (強制加深字體、消除格線)
         fig.update_layout(
             height=650,
             template=chart_template,
             hovermode="x unified",
             paper_bgcolor=bg_color,
             plot_bgcolor=bg_color,
-            font=dict(color=font_color, size=14),
+            # 1. 全域字體設定：強制設為 font_color (純黑) 並放大
+            font=dict(color=font_color, size=14), 
+            
+            # 2. 強制指定圖例文字顏色與大小
+            legend_font_color=font_color,
+            legend_font_size=14,
+            
             xaxis=dict(
-                type='category', # 消除缺口
+                type='category', 
                 color=font_color, 
-                tickfont=dict(color=font_color),
+                tickfont=dict(color=font_color, size=12),
                 nticks=10,
-                showgrid=False, # 消除格線
+                showgrid=False, 
                 zeroline=False
             ),
+            
             yaxis=dict(
                 color=font_color, 
-                tickfont=dict(color=font_color),
-                title=dict(text="對數化股價 Log(Price)", font=dict(color=font_color)),
-                showgrid=False, # 消除格線
+                tickfont=dict(color=font_color, size=12),
+                title=dict(text="對數化股價 Log(Price)", font=dict(color=font_color, size=14)),
+                showgrid=False, 
                 zeroline=False
             ),
-            # --- 修改此處：強制指定圖例字體顏色 ---
+            
+            # 3. 圖例詳細設定
             legend=dict(
                 orientation="h", 
                 yanchor="bottom", 
                 y=1.02, 
                 xanchor="center", 
                 x=0.5,
-                # 新增以下這行，確保文字使用純黑色並稍微放大
-                font=dict(color=font_color, size=13) 
+                # 這裡再次強制指定顏色，並增加邊框讓它更明顯
+                font=dict(color=font_color, size=14),
+                bordercolor=font_color, # 增加一個淡淡的邊框有助於視覺識別
+                borderwidth=0.5,
+                itemsizing='constant' # 讓圖示大小固定，不會變細
             )
         )
 

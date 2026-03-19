@@ -181,7 +181,16 @@ else:
                 showgrid=False, # 消除格線
                 zeroline=False
             ),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+            # --- 修改此處：強制指定圖例字體顏色 ---
+            legend=dict(
+                orientation="h", 
+                yanchor="bottom", 
+                y=1.02, 
+                xanchor="center", 
+                x=0.5,
+                # 新增以下這行，確保文字使用純黑色並稍微放大
+                font=dict(color=font_color, size=13) 
+            )
         )
 
         st.plotly_chart(fig, use_container_width=True)

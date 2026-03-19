@@ -102,9 +102,10 @@ else:
     
     if not data.empty:
         # 取得公司名稱
-        ticker_info = yf.Ticker(search_id)
-        long_name = ticker_info.info.get('longName', search_id)
-        st.write(f"### {search_id} - {long_name}")
+        # ticker_info = yf.Ticker(search_id) #先拿掉避免觸發YFRateLimitError
+        # long_name = ticker_info.info.get('longName', search_id) #先拿掉避免觸發YFRateLimitError
+        # st.write(f"### {search_id} - {long_name}") #先拿掉避免觸發YFRateLimitError
+        st.write(f"### {search_id}")
 
         # B. 資料處理與多層索引處理
         if isinstance(data.columns, pd.MultiIndex):

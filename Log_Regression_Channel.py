@@ -94,7 +94,7 @@ calculate_btn = st.sidebar.button("開始計算")
 st.write(f"## 📈 David 波段股價對數回歸通道")
 
 if not calculate_btn:
-    st.info("💡 請點開左上角選單 [ > ] 設定參數後按「開始計算」。")
+    st.info("💡 請點開左上角選單 [ >> ] 在左側面板設定參數後，按「開始計算」即可產出圖表")
 else:
     # A. 下載資料
     search_id = f"{stock_id}.TW" if stock_id.isdigit() else stock_id

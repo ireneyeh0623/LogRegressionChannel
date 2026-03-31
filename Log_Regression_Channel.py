@@ -16,7 +16,7 @@ st.sidebar.header("查詢設定")
 stock_id = st.sidebar.text_input("股票代號(如2330.TW或AAPL)", "2330.TW")
 
 # 日期選擇
-start_date = st.sidebar.date_input("起始日期", datetime(2020, 1, 1))
+start_date = st.sidebar.date_input("起始日期", datetime(2022, 10, 3))
 end_date = st.sidebar.date_input("結束日期", datetime.now())
 
 # 圖表主題選擇

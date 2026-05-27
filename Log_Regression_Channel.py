@@ -91,14 +91,16 @@ else:
 calculate_btn = st.sidebar.button("開始計算")
 
 # --- 4. 主要標題 ---
-st.write(f"## 📈 David 波段股價對數回歸通道")
+st.write("## 📈 David 波段股價對數回歸通道")
 
 if not calculate_btn:
     st.info("💡 請點開左上角選單 [ >> ] 在左側面板設定參數後，按「開始計算」即可產出圖表")
 else:
     # A. 下載資料
     search_id = f"{stock_id}.TW" if stock_id.isdigit() else stock_id
-    data = yf.download(search_id, start=start_date, end=end_date, auto_adjust=True)
+    # auto_adjust 在新版 yfinance 已預設為 True，明確傳入反而可能觸發 FutureWarning 或 TypeError
+    # progress=False 避免進度條文字印在 Streamlit 頁面上
+    data = yf.download(search_id, start=start_date, end=end_date, progress=False)
     
     if not data.empty:
         # 取得公司名稱
@@ -108,22 +110,35 @@ else:
         st.write(f"### {search_id}")
 
         # B. 資料處理與多層索引處理
+        # 相容新版 yfinance：單一股票下載也可能回傳 MultiIndex 欄位 (Price, Ticker)
         if isinstance(data.columns, pd.MultiIndex):
             data.columns = data.columns.get_level_values(0)
         df = data.reset_index()
 
-        # 安全建立收盤價欄位
-        try:
-            df['Close_1D'] = df['Close']
-        except KeyError:
+        # 相容新版 yfinance：reset_index() 後日期欄位可能命名為 'Datetime' 而非 'Date'
+        if 'Date' not in df.columns:
+            for alt_name in ['Datetime', 'index']:
+                if alt_name in df.columns:
+                    df.rename(columns={alt_name: 'Date'}, inplace=True)
+                    break
+            else:
+                # 備案：將第一欄（必為日期）重新命名
+                df.rename(columns={df.columns[0]: 'Date'}, inplace=True)
+
+        # 相容新版 yfinance：Close 欄位大小寫可能有差異，做彈性偵測
+        close_col = next((c for c in df.columns if str(c).lower() == 'close'), None)
+        if close_col is None:
             st.error("找不到收盤價欄位，請重新嘗試。")
             st.stop()
 
+        # 安全建立收盤價欄位
+        df['Close_1D'] = df[close_col].astype(float)
+
         # [核心] 1. 對數化股價：對收盤價取對數
         df['Log_Close'] = np.log(df['Close_1D'])
-        
+
         # 格式化日期字串 (用於 X 軸消除缺口)
-        df['Date_Str'] = df['Date'].dt.strftime('%Y-%m-%d')
+        df['Date_Str'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
 
         # [核心] 2. 線性回歸計算 (針對對數化股價)
         X = np.array(df.index).reshape(-1, 1)

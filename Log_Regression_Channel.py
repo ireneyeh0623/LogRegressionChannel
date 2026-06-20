@@ -238,4 +238,4 @@ else:
         col4.metric("對數離差 SD", f"{sd_val:.4f}")
         
     else:
-        st.error("找不到股票資料，請檢查代號或日期。")
+        st.error(f"找不到股票資料（已嘗試：{', '.join(candidates)}），請檢查代號或日期。")

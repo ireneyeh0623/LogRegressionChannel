@@ -13,7 +13,7 @@ st.set_page_config(page_title="David 波段股價對數回歸通道", layout="wi
 st.sidebar.header("查詢設定")
 
 # 股票代號
-stock_id = st.sidebar.text_input("股票代號(如2330.TW或AAPL)", "2330.TW")
+stock_id = st.sidebar.text_input("股票代號(如2330或AAPL)", "2330")
 
 # 日期選擇
 start_date = st.sidebar.date_input("起始日期", datetime(2022, 10, 3))
@@ -96,11 +96,16 @@ st.write("## 📈 David 波段股價對數回歸通道")
 if not calculate_btn:
     st.info("💡 請點開左上角選單 [ >> ] 在左側面板設定參數後，按「開始計算」即可產出圖表")
 else:
-    # A. 下載資料
-    search_id = f"{stock_id}.TW" if stock_id.isdigit() else stock_id
-    # auto_adjust 在新版 yfinance 已預設為 True，明確傳入反而可能觸發 FutureWarning 或 TypeError
-    # progress=False 避免進度條文字印在 Streamlit 頁面上
-    data = yf.download(search_id, start=start_date, end=end_date, progress=False)
+    # A. 下載資料：依序嘗試原始代號 → .TW → .TWO
+    candidates = [stock_id, f"{stock_id}.TW", f"{stock_id}.TWO"]
+    data = pd.DataFrame()
+    search_id = stock_id
+    for candidate in candidates:
+        _data = yf.download(candidate, start=start_date, end=end_date, progress=False)
+        if not _data.empty:
+            data = _data
+            search_id = candidate
+            break
     
     if not data.empty:
         # 取得公司名稱
